@@ -1,0 +1,47 @@
+<h1>Carts#show</h1>
+<%= Rails.application.credentials.dig(:stripe, :publishable_key) %>
+<p>Find me in app/views/carts/show.html.erb</p>
+
+<h1>Votre panier</h1>
+
+<% if @cart.cart_items.any? %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Produit</th>
+        <th>Quantité</th>
+        <th>Prix unitaire</th>
+        <th>Sous-total</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @cart.cart_items.each do |item| %>
+        <tr>
+          <td><%= item.product.name %></td>
+          <td><%= item.quantity %></td>
+          <td><%= number_to_currency(item.product.price) %></td>
+          <td><%= number_to_currency(item.quantity * item.product.price) %></td>
+          <td>
+            <%= link_to "Retirer", cart_item_path(item), method: :delete, data: { turbo_confirm: "Supprimer cet article ?" }, class: "btn btn-danger btn-sm" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <h3>Total du panier : <%= number_to_currency(@cart.total_price) %></h3>
+
+  <%= button_to "Procéder au paiement", new_order_path, method: :post, class: "btn btn-success" %>
+<% else %>
+  <p>Votre panier est vide.</p>
+<% end %>
+<%= link_to "Continuer vos achats", products_path, class: "btn btn-primary" %>
+<%= link_to "Vider le panier", cart_path, method: :delete, data: { turbo_confirm: "Êtes-vous sûr de vouloir vider le panier ?" }, class: "btn btn-warning" %>
+<%= link_to "Retour à la boutique", products_path, class: "btn btn-secondary" %>
+<%= link_to "Modifier le panier", edit_cart_path, class: "btn btn-info" %>
+<%= link_to "Ajouter un produit", new_product_path, class: "btn btn-primary" %>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe("<%= Rails.application.credentials.dig(:stripe, :publishable_key) %>");
+</script>

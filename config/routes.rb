@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   devise_for :users
+  get "carts/index"
+  get "carts/show"
+  get "carts/new"
+  get "carts/edit"
   resources :items
+  resource :cart, only: [:show] # au singulier (panier unique par user)
+  resources :cart_items, only: [:create, :update, :destroy]
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
